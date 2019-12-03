@@ -1,11 +1,12 @@
 #%% Internet movie database
 
 from tensorflow_core.python.keras.datasets import imdb
-
+import numpy as np
 (train_data, train_label), (test_data, test_labels) = imdb.load_data(num_words=10000)
 # only keep the top 10,000 most frequently occurring words in the training data, 
 # in other words, the words in the movie review only come from the dictionary that 
 # only has these 10,000 words.  
+
 
 
 print("length of train_data and test_data: ", len(train_data), len(test_data))
@@ -36,7 +37,7 @@ print("review in train_data[0]: ", decoded_review)
 # vector to encode which words appear in the review that leads to the positive or negative 
 # review.
 
-import numpy as np
+
 
 def vectorize_sequences(sequences, dimension=10000):
     results = np.zeros((len(sequences), dimension))
@@ -49,19 +50,14 @@ x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
 
 
-
-print(x_train[0].ndim)
-# one dimensional ndarray
-print(x_test.ndim)
-# two dimensional ndarray
-
 y_train = np.asarray(train_label).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
 
-index = 2
-print(x_train[index])
-print(y_train[index])
-
+#make the training data 80% and testing 20%
+x_train = np.concatenate((x_train, x_test[:15000]))
+x_test = x_test[15000:]
+y_train = np.concatenate((y_train, test_labels[:15000]))
+y_test = y_test[15000:]
 
 from tensorflow_core.python.keras import models
 from tensorflow_core.python.keras import layers
