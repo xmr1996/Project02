@@ -1,9 +1,7 @@
-# from github susanli2016
-#https://github.com/andyngo95/SA_Positive_Negative_Comments/blob/master/Sentiment_Analysis_v2.ipynb
-#https://towardsdatascience.com/light-on-math-ml-attention-with-keras-dc8dbc1fad39
-#https://github.com/thushv89/attention_keras
+#https://github.com/iamved/IMDB-sentiment-analysis/blob/master/IMDB_Sentiment_Analysis.ipynb
+#https://github.com/balag59/imdb-sentiment-bidirectional-LSTM/blob/master/imdb_bilstm_train.py
+
 from tensorflow.python.keras.datasets import imdb
-#from attention_keras.layers.attention import AttentionLayer
 import numpy as np
 
 (train_data, train_label), (test_data, test_labels) = imdb.load_data(num_words=10000)
@@ -27,36 +25,37 @@ def vectorize_sequences(sequences, dimension=10000):
 
 x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
-print(x_train[0].ndim)
-print(x_test.ndim)
 
 y_train = np.asarray(train_label).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
-index = 2
-print(x_train[index])
-print(y_train[index])
 
-from keras import Sequential
-from keras.layers import Embedding, LSTM, Dense, Dropout
+x_train = np.concatenate((x_train, x_test[:15000]))
+x_test = x_test[15000:]
+y_train = np.concatenate((y_train, test_labels[:15000]))
+y_test = y_test[15000:]
 
-embedding_size = 32
-model = Sequential()
-model.add(Embedding(10000, embedding_size, input_length=500))
-model.add(LSTM(128))
-model.add(Dropout(0.4))
-model.add(LSTM(128))
-model.add(Dropout(0.4))
-# need attention
-model.add(Dense(256), activation='relu')
-model.add(Dropout(0.5))
-model.add(Dense(1, activation='softmax'))
 
-model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['acc'])
+from tensorflow.python.keras import models, layers
+
+#maybe change?
+max_features = 10000
+
+network = models.Sequential()
+network.add(layers.Embedding(max_features, 128))
+network.add(layers.Bidirectional(layers.LSTM(64, input_shape=(10000,))))
+network.add(layers.Dropout(0.5))
+network.add(layers.Bidirectional(layers.LSTM(64)))
+network.add(layers.Dropout(0.5))
+network.add(layers.Dense(20, activation='relu'))
+network.add(layers.Dropout(0.05))
+network.add(layers.Dense(1, activation='sigmoid'))
+
+network.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['acc'])
 x_val = x_train[:10000]
 partial_x_training = x_train[10000:]
 y_val = y_train[:10000]
 partial_y_training = y_train[10000:]
-history = model.fit(partial_x_training, partial_y_training, epochs=20, batch_size=512, validation_data=(x_val, y_val))
+history = network.fit(partial_x_training, partial_y_training, epochs=20, batch_size=256, validation_data=(x_val, y_val))
 
 import matplotlib.pyplot as plt
 history_dict = history.history
