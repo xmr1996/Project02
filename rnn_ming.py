@@ -5,7 +5,7 @@ from tensorflow_core.python.keras.datasets import imdb
 from tensorflow_core.python.keras.preprocessing import sequence
 
 max_features = 10000
-maxlen = 500
+maxlen = 1000
 batch_size = 32
 
 print('Loading data...')
@@ -35,6 +35,7 @@ model.add(layers.Bidirectional(layers.LSTM(128)))
 # model.add(layers.Dropout(0.2))
 model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(32, activation='relu'))
 model.add(layers.Dense(16, activation='relu'))
 model.add(layers.Dense(16, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
