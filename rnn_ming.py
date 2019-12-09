@@ -5,7 +5,7 @@ from tensorflow_core.python.keras.datasets import imdb
 from tensorflow_core.python.keras.preprocessing import sequence
 
 max_features = 10000
-maxlen = 1000
+maxlen = 500
 batch_size = 32
 
 print('Loading data...')
@@ -45,7 +45,7 @@ model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['acc'])
 his = model.fit(x_train, y_train,
-                    epochs=3,
+                    epochs=4,
                     batch_size=64,
                     validation_split=0.025)
 
