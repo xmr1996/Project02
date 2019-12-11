@@ -4,7 +4,7 @@
 from tensorflow.python.keras.datasets import imdb
 from tensorflow.python.keras.preprocessing import sequence
 from keras import Sequential
-from keras.layers import Embedding, LSTM, Dense, Dropout, Bidirectional
+from keras.layers import Embedding, LSTM, Dense, Dropout, Bidirectional, TimeDistributed
 import numpy as np
 
 max_features = 10000
@@ -20,18 +20,19 @@ test_data = test_data[15000:]
 train_label = np.concatenate((train_label, test_labels[:15000]))
 test_labels = test_labels[15000:]
 
-embedding_size = 32
+embedding_size = 128
 network = Sequential()
 network.add(Embedding(max_features, embedding_size, input_length=max_length))
-network.add(Bidirectional(LSTM(64)))
-network.add(Dropout(0.2))
-network.add(Bidirectional(LSTM(64)))
-network.add(Dropout(0.2))
-network.add(Dense(20, activation='relu'))
+network.add(Bidirectional(LSTM(embedding_size, return_sequences=True)))
+#network.add(Dropout(0.2))
+network.add(Bidirectional(LSTM(embedding_size, return_sequences=True)))
+#network.add(Dropout(0.2))
+network.add(Bidirectional(LSTM(embedding_size)))
+network.add(Dense(16, activation='relu'))
 network.add(Dense(1, activation='sigmoid'))
 
 network.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
-history = network.fit(train_data, train_label, epochs=15, batch_size=64, validation_split=0.2)
+history = network.fit(train_data, train_label, epochs=4, batch_size=64, validation_split=0.15)
 
 import matplotlib.pyplot as plt
 history_dict = history.history

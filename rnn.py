@@ -22,12 +22,12 @@ test_data = test_data[15000:]
 train_label = np.concatenate((train_label, test_labels[:15000]))
 test_labels = test_labels[15000:]
 
-embedding_size = 32
+embedding_size = 128
 model = Sequential()
 model.add(Embedding(max_features, embedding_size, input_length=max_length))
-model.add(LSTM(128))
+model.add(LSTM(embedding_size, return_sequences=True))
 model.add(Dropout(0.2))
-model.add(LSTM(128))
+model.add(LSTM(embedding_size))
 model.add(Dropout(0.2))
 # need attention
 model.add(Dense(64), activation='relu')
