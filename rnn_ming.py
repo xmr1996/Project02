@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from tensorflow_core.python.keras.datasets import imdb
@@ -32,7 +31,7 @@ embedding_size = 128
 model = models.Sequential()
 model.add(layers.Embedding(max_features, embedding_size))
 model.add(layers.Bidirectional(layers.LSTM(128)))
-# model.add(layers.Dropout(0.2))
+model.add(layers.Dropout(0.2))
 model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(32, activation='relu'))
@@ -44,8 +43,10 @@ model.add(layers.Dense(1, activation='sigmoid'))
 model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['acc'])
+
+model.summary()
 his = model.fit(x_train, y_train,
-                    epochs=4,
+                    epochs=3,
                     batch_size=64,
                     validation_split=0.025)
 
@@ -54,6 +55,3 @@ results = model.evaluate(input_test, y_test)
 print(results)
 
 print("Done!")
-
-
-
